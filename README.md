@@ -39,7 +39,7 @@ Signature (Name & Date):
 
 Student 1: Chritian Kist               Date: 4/10/2026
 
-Student 2:____________________________ Date: 4/10/2026
+Student 2: Wyatt Robitaille            Date: 4/11/2026
 
 Student 3: Theodore Robillard          Date: 4/10/2026
 
