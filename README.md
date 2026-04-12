@@ -37,7 +37,7 @@ This proposal is considered a living document until approval. Once approved, sco
 
 Signature (Name & Date):
 
-Student 1:____________________________ Date: 4/10/2026
+Student 1: Chritian Kist               Date: 4/10/2026
 
 Student 2:____________________________ Date: 4/10/2026
 
