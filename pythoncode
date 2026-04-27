@@ -10,61 +10,157 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 intents = discord.Intents.default()
 intents.message_content = True
 
-bot = commands.Bot(command_prefix='!', intents=intents)
+bot = commands.Bot(command_prefix="!", intents=intents)
+
 TZ = ZoneInfo("America/New_York")
 
-ASSIGNMENTS_JSON = '''
+# ----------------------------
+# MODULE-BASED DATA STRUCTURE
+# ----------------------------
+ASSIGNMENTS_JSON = """
 {
-  "course": "Assignments273",
-  "assignments": [
-    {"name": "Discord Participation", "due_date": "2026-01-25T23:59:00"},
-    {"name": "Discord Username Setup", "due_date": "2026-01-25T23:59:00"},
-    {"name": "Virtual Machine Setup", "due_date": "2026-01-25T23:59:00"},
-    {"name": "Python and Pandas Review Assignment", "due_date": "2026-02-01T23:59:00"},
-    {"name": "BeautifulSoup Assignment", "due_date": "2026-02-08T23:59:00"},
-    {"name": "APIs and Requests Assignment", "due_date": "2026-02-15T23:59:00"},
-    {"name": "Python, Pandas, and SQL Assignment", "due_date": "2026-02-22T23:59:00"},
-    {"name": "Python and Plotly Assignment", "due_date": "2026-03-01T23:59:00"},
-    {"name": "Midterm Project Assignment", "due_date": "2026-03-15T23:59:00"},
-    {"name": "Final Project Assignment", "due_date": "2026-05-03T23:59:00"}
-  ]
+  "modules": [
+    {
+      "id": "intro",
+      "title": "Module 1: Course Introduction",
+      "due_date": "2026-01-25T23:59:00",
+      "assignments": ["discord_username", "discord_participation", "vm_setup"]
+    },
+    {
+      "id": "python",
+      "title": "Module 2: Python & Pandas Review",
+      "due_date": "2026-02-01T23:59:00",
+      "assignments": ["python_pandas_review"]
+    },
+    {
+      "id": "web",
+      "title": "Module 3: Web Scraping",
+      "due_date": "2026-02-08T23:59:00",
+      "assignments": ["beautifulsoup_assignment"]
+    },
+    {
+      "id": "api",
+      "title": "Module 4: APIs & Requests",
+      "due_date": "2026-02-15T23:59:00",
+      "assignments": ["apis_requests_assignment"]
+    },
+    {
+      "id": "sql",
+      "title": "Module 5: SQL Integration",
+      "due_date": "2026-02-22T23:59:00",
+      "assignments": ["python_pandas_sql"]
+    },
+    {
+      "id": "viz",
+      "title": "Module 6: Data Visualization",
+      "due_date": "2026-03-01T23:59:00",
+      "assignments": ["python_plotly_assignment"]
+    },
+    {
+      "id": "midterm",
+      "title": "Module 7: Midterm Project",
+      "due_date": "2026-03-15T23:59:00",
+      "assignments": ["midterm_project"]
+    },
+    {
+      "id": "final",
+      "title": "Module 8: Final Project",
+      "due_date": "2026-05-03T23:59:00",
+      "assignments": ["final_project"]
+    }
+  ],
+
+  "assignments": {
+    "discord_username": {
+      "name": "Discord Username Setup"
+    },
+    "discord_participation": {
+      "name": "Discord Participation"
+    },
+    "vm_setup": {
+      "name": "Virtual Machine Setup"
+    },
+    "python_pandas_review": {
+      "name": "Python and Pandas Review Assignment"
+    },
+    "beautifulsoup_assignment": {
+      "name": "BeautifulSoup Assignment"
+    },
+    "apis_requests_assignment": {
+      "name": "APIs and Requests Assignment"
+    },
+    "python_pandas_sql": {
+      "name": "Python, Pandas, and SQL Assignment"
+    },
+    "python_plotly_assignment": {
+      "name": "Python and Plotly Assignment"
+    },
+    "midterm_project": {
+      "name": "Midterm Project Assignment"
+    },
+    "final_project": {
+      "name": "Final Project Assignment"
+    }
+  }
 }
-'''
+"""
 
 data = json.loads(ASSIGNMENTS_JSON)
-assignments = [
-    {
-        "name": item["name"],
-        "due": datetime.fromisoformat(item["due_date"]).replace(tzinfo=TZ)
-    }
-    for item in data["assignments"]
-]
 
+modules = data["modules"]
+assignment_map = data["assignments"]
+
+# convert module dates
+for m in modules:
+    m["due"] = datetime.fromisoformat(m["due_date"]).replace(tzinfo=TZ)
+
+# ----------------------------
+# BOT EVENTS
+# ----------------------------
 @bot.event
 async def on_ready():
-    print(f'Logged in as {bot.user}')
+    print(f"Logged in as {bot.user}")
 
-@bot.command(name='assignments273')
+# ----------------------------
+# COMMAND: NEXT ASSIGNMENT
+# ----------------------------
+@bot.command(name="assignments273")
 async def assignments273(ctx):
     now = datetime.now(TZ)
-    upcoming = [a for a in assignments if a['due'] >= now]
 
-    if not upcoming:
-        await ctx.send('There are no upcoming assignments.')
+    upcoming_modules = [m for m in modules if m["due"] >= now]
+
+    if not upcoming_modules:
+        await ctx.send("There are no upcoming modules.")
         return
 
-    nearest = min(upcoming, key=lambda x: x['due'])
-    due_str = nearest['due'].strftime('%B %d, %Y at %I:%M %p %Z')
-    remaining = nearest['due'] - now
+    nearest = min(upcoming_modules, key=lambda m: m["due"])
+
+    remaining = nearest["due"] - now
     days = remaining.days
-    hours, remainder = divmod(remaining.seconds, 3600)
-    minutes = remainder // 60
+    hours, rem = divmod(remaining.seconds, 3600)
+    minutes = rem // 60
+
+    # build assignment names
+    assignment_names = [
+        assignment_map[a]["name"]
+        for a in nearest["assignments"]
+    ]
+
+    due_str = nearest["due"].strftime("%B %d, %Y at %I:%M %p %Z")
 
     await ctx.send(
-    f"📚 **Nearest assignment due**\n"
-    f"**{nearest['name']}**\n"
-    f"📅 Due: {due_str}\n"
-    f"⏳ Time remaining: {days} days, {hours} hours, {minutes} minutes"
-)
+        f"📘 **Next Module Due**\n"
+        f"**{nearest['title']}**\n"
+        f"📅 Due: {due_str}\n\n"
+        f"🧾 Assignments:\n- " + "\n- ".join(assignment_names) +
+        f"\n\n⏳ Time remaining: {days}d {hours}h {minutes}m"
+    )
+
+# ----------------------------
+# RUN BOT
+# ----------------------------
+if not TOKEN:
+    raise ValueError("DISCORD_TOKEN not set")
 
 bot.run(TOKEN)
