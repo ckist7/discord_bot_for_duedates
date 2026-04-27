@@ -1,0 +1,70 @@
+import os
+import json
+import discord
+from discord.ext import commands
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
+TOKEN = os.getenv("DISCORD_TOKEN")
+
+intents = discord.Intents.default()
+intents.message_content = True
+
+bot = commands.Bot(command_prefix='!', intents=intents)
+TZ = ZoneInfo("America/New_York")
+
+ASSIGNMENTS_JSON = '''
+{
+  "course": "Assignments273",
+  "assignments": [
+    {"name": "Discord Participation", "due_date": "2026-01-25T23:59:00"},
+    {"name": "Discord Username Setup", "due_date": "2026-01-25T23:59:00"},
+    {"name": "Virtual Machine Setup", "due_date": "2026-01-25T23:59:00"},
+    {"name": "Python and Pandas Review Assignment", "due_date": "2026-02-01T23:59:00"},
+    {"name": "BeautifulSoup Assignment", "due_date": "2026-02-08T23:59:00"},
+    {"name": "APIs and Requests Assignment", "due_date": "2026-02-15T23:59:00"},
+    {"name": "Python, Pandas, and SQL Assignment", "due_date": "2026-02-22T23:59:00"},
+    {"name": "Python and Plotly Assignment", "due_date": "2026-03-01T23:59:00"},
+    {"name": "Midterm Project Assignment", "due_date": "2026-03-15T23:59:00"},
+    {"name": "Final Project Assignment", "due_date": "2026-05-03T23:59:00"}
+  ]
+}
+'''
+
+data = json.loads(ASSIGNMENTS_JSON)
+assignments = [
+    {
+        "name": item["name"],
+        "due": datetime.fromisoformat(item["due_date"]).replace(tzinfo=TZ)
+    }
+    for item in data["assignments"]
+]
+
+@bot.event
+async def on_ready():
+    print(f'Logged in as {bot.user}')
+
+@bot.command(name='assignments273')
+async def assignments273(ctx):
+    now = datetime.now(TZ)
+    upcoming = [a for a in assignments if a['due'] >= now]
+
+    if not upcoming:
+        await ctx.send('There are no upcoming assignments.')
+        return
+
+    nearest = min(upcoming, key=lambda x: x['due'])
+    due_str = nearest['due'].strftime('%B %d, %Y at %I:%M %p %Z')
+    remaining = nearest['due'] - now
+    days = remaining.days
+    hours, remainder = divmod(remaining.seconds, 3600)
+    minutes = remainder // 60
+
+    await ctx.send(
+    f"📚 **Nearest assignment due**\n"
+    f"**{nearest['name']}**\n"
+    f"📅 Due: {due_str}\n"
+    f"⏳ Time remaining: {days} days, {hours} hours, {minutes} minutes"
+)
+
+bot.run(TOKEN)
