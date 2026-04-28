@@ -1,0 +1,13 @@
+This project of a Discord bot that presents due dates of upcoming assignments in our current class for the semester can
+be implemented to all classes in the future with a few updates of the code and changing the token into one the professor has
+so that way it can be steadily used. 
+
+I think this can help students of Professor Bisestis as we are on discord more for class communication than we are on brightspace.
+Many wonder when assignments are due and this chatbot can make it very simple to stay informed for each class.
+
+I got the general code within a week of starting this assignment but spent a lot of time on 4/28 getting the bot setup for testing, and then 
+had to manipulate little things in my code to get it to work. Mainly, getting my VSCode to read the right .env. I had many from writing other codes 
+so I wrote the program to force read a certain pathway to the .env that had the discord token in it. 
+
+This bot is similar to the haiku bot but different in a sense that you have to input a command to get a response and the program has the data loaded
+into it instead of scraping websites to generate random poems. Once this bot is cleaned up and gets updated for each class it will be a great tool.
