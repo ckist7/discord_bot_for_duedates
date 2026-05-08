@@ -11,3 +11,24 @@ so I wrote the program to force read a certain pathway to the .env that had the 
 
 This bot is similar to the haiku bot but different in a sense that you have to input a command to get a response and the program has the data loaded
 into it instead of scraping websites to generate random poems. Once this bot is cleaned up and gets updated for each class it will be a great tool.
+
+
+Additions to the Bot?
+
+**View Assignments:**
+`!assignments` - Show all upcoming assignments
+`!assignments <CLASS>` - Show assignments for specific class (e.g., `!assignments 298`)
+
+**Manage Assignments:**
+`!addassignment <CLASS> "<TITLE>" <DATE>` - Add new assignment (e.g., `!addassignment 298 "Midterm" 2024-12-15`)
+`!removeassignment <CLASS> "<TITLE>"` - Remove an assignment
+
+**Info:**
+`!listclasses` - Show all classes with assignments
+`!help` - Show this message
+
+-Also we can add the weight of the assignment. What % of your grade it is worth.
+-Can add a description whether it is a full or partial description of each assignment/quiz/test
+-Maybe set a reminder for 48 hours before an assignment is due and another at 24 hours like our haiku bot and posts automatically
+
+
